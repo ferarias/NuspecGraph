@@ -1,4 +1,4 @@
-﻿namespace NuspecFileReader
+﻿namespace NuspecReader
 {
     public class VersionedPackage
     {

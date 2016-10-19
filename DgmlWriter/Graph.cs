@@ -1,4 +1,4 @@
-﻿namespace DGML
+﻿namespace DgmlWriter
 {
     public struct Graph
     {

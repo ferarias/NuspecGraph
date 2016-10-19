@@ -7,8 +7,8 @@
     <ProjectGuid>{3D2DF8C2-71E6-403B-96D1-E3000FE973AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>DGML_Generator</RootNamespace>
-    <AssemblyName>DGML Generator</AssemblyName>
+    <RootNamespace>DgmlWriter</RootNamespace>
+    <AssemblyName>DgmlWriter</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>

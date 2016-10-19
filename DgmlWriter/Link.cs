@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace DGML
+namespace DgmlWriter
 {
     public struct Link
     {

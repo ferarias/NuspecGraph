@@ -1,23 +1,21 @@
-﻿using NuspecFileReader;
-using System;
+﻿using System;
 using System.IO;
 using System.Text;
 using System.Xml;
-using DGML;
 
-namespace NuDgm
+namespace NuspecGraph
 {
-    class Program
+    internal static class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
 
             var folder = AppDomain.CurrentDomain.BaseDirectory;
             var name = Path.Combine(folder, "test.nuspec");
-            var reader = new NuspecReader();
+            var reader = new NuspecReader.NuspecReader();
             reader.Read(name);
 
-            var dgmlWriter = new DgmlWriter();
+            var dgmlWriter = new DgmlWriter.DgmlWriter();
             dgmlWriter.AddClass(reader.Package.GetId(), reader.Package.GetLabel());
             foreach (var dependency in reader.Dependencies)
             {

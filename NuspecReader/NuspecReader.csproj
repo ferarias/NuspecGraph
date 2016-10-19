@@ -7,8 +7,8 @@
     <ProjectGuid>{7896EA85-D8E6-4B4B-BCFD-31485AE7BAA2}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NuspecFileReader</RootNamespace>
-    <AssemblyName>NuspecFileReader</AssemblyName>
+    <RootNamespace>NuspecReader</RootNamespace>
+    <AssemblyName>NuspecReader</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

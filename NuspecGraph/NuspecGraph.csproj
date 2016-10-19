@@ -7,8 +7,8 @@
     <ProjectGuid>{0B0AE657-0FD0-44BC-BDF1-83571E999A8D}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>NuDgm</RootNamespace>
-    <AssemblyName>NuDgm</AssemblyName>
+    <RootNamespace>NuspecGraph</RootNamespace>
+    <AssemblyName>NuspecGraph</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
@@ -53,13 +53,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DGML Generator\DGML.csproj">
+    <ProjectReference Include="..\DgmlWriter\DgmlWriter.csproj">
       <Project>{3d2df8c2-71e6-403b-96d1-e3000fe973aa}</Project>
-      <Name>DGML</Name>
+      <Name>DgmlWriter</Name>
     </ProjectReference>
-    <ProjectReference Include="..\NuspecReader\NuspecFileReader.csproj">
+    <ProjectReference Include="..\NuspecReader\NuspecReader.csproj">
       <Project>{7896ea85-d8e6-4b4b-bcfd-31485ae7baa2}</Project>
-      <Name>NuspecFileReader</Name>
+      <Name>NuspecReader</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
