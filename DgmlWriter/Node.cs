@@ -22,5 +22,11 @@ namespace DgmlWriter
             FilePath = filePath;
             Group = group;
         }
+
+        public override string ToString()
+        {
+            return $"{Id} - {Label}";
+        }
     }
+
 }

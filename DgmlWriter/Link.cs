@@ -29,5 +29,10 @@ namespace DgmlWriter
                 FetchingParent = null;
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Source}->{Target}";
+        }
     }
 }

@@ -13,7 +13,5 @@
         public string Version { get; set; }
 
         public string GetLabel() => $"{Id} v{Version}";
-
-        public string GetId() => GetHashCode().ToString();
     }
 }

@@ -6,190 +6,122 @@ namespace DgmlWriter
 {
     public class DgmlWriter
     {
-        public List<Node> Nodes { get; private set; }
-        public List<Link> Links { get; private set; }
-        public List<Style> Styles { get; private set; }
-        public List<Category> Categories { get; private set; }
-        public List<Property> Properties { get; private set; }
         public DgmlWriter()
         {
             Nodes = new List<Node>();
             Links = new List<Link>();
             Styles = new List<Style>();
             Categories = new List<Category>();
-            AddDefaultStyles();
         }
 
-        private void AddDefaultStyles()
-        {
-            AddStyle(new Style(null, "HasCategory('QueryResult')", "Node", "Results", "True", new Style.StyleProperty("Background", "#FFBCFFBE")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_TestProject')", "Node", "Test Project", "Test Project", new Style.StyleProperty("Icon", "CodeMap_TestProject"), new Style.StyleProperty("Background", "#FF307A69")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_WebProject')", "Node", "Web Project", "Web Project", new Style.StyleProperty("Icon", "CodeMap_WebProject")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_WindowsStoreProject')", "Node", "Windows Store Project", "Windows Store Project", new Style.StyleProperty("Icon", "CodeMap_WindowsStoreProject")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_PhoneProject')", "Node", "Phone Project", "Phone Project", new Style.StyleProperty("Icon", "CodeMap_PhoneProject")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_PortableLibraryProject')", "Node", "Portable Library", "Portable Library", new Style.StyleProperty("Icon", "CodeMap_PortableLibraryProject")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_WpfProject')", "Node", "WPF Project", "WPF Project", new Style.StyleProperty("Icon", "CodeMap_WpfProject")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_VsixProject')", "Node", "VSIX Project", "VSIX Project", new Style.StyleProperty("Icon", "CodeMap_VsixProject")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_ModelingProject')", "Node", "Modeling Project", "Modeling Project", new Style.StyleProperty("Icon", "CodeMap_ModelingProject")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Assembly')", "Node", "Assembly", "Has category", new Style.StyleProperty("Background", "#FF094167"), new Style.StyleProperty("Stroke", "#FF094167"), new Style.StyleProperty("Icon", "CodeSchema_Assembly")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Namespace')", "Node", "Namespace", "Has category", new Style.StyleProperty("Background", "#FF0E619A"), new Style.StyleProperty("Stroke", "#FF0E619A"), new Style.StyleProperty("Icon", "CodeSchema_Namespace")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Interface')", "Node", "Interface", "Has category", new Style.StyleProperty("Background", "#FF1382CE"), new Style.StyleProperty("Stroke", "#FF1382CE"), new Style.StyleProperty("Icon", "CodeSchema_Interface")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Struct')", "Node", "Struct", "Has category", new Style.StyleProperty("Background", "#FF1382CE"), new Style.StyleProperty("Stroke", "#FF1382CE"), new Style.StyleProperty("Icon", "CodeSchema_Struct")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Enum')", "Node", "Enumeration", "Has category", new Style.StyleProperty("Background", "#FF1382CE"), new Style.StyleProperty("Stroke", "#FF1382CE"), new Style.StyleProperty("Icon", "CodeSchema_Enum"), new Style.StyleProperty("LayoutSettings", "List")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Delegate')", "Node", "Delegate", "Has category", new Style.StyleProperty("Background", "#FF1382CE"), new Style.StyleProperty("Stroke", "#FF1382CE"), new Style.StyleProperty("Icon", "CodeSchema_Delegate")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Type')", "Node", "Class", "Has category", new Style.StyleProperty("Background", "#FF1382CE"), new Style.StyleProperty("Stroke", "#FF1382CE"), new Style.StyleProperty("Icon", "CodeSchema_Class")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Property')", "Node", "Property", "Has category", new Style.StyleProperty("Background", "#FFE0E0E0"), new Style.StyleProperty("Stroke", "#FFE0E0E0"), new Style.StyleProperty("Icon", "CodeSchema_Property")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Method') Or HasCategory('CodeSchema_CallStackUnresolvedMethod')", "Node", "Method", "Has category", new Style.StyleProperty("Background", "#FFE0E0E0"), new Style.StyleProperty("Stroke", "#FFE0E0E0"), new Style.StyleProperty("Icon", "CodeSchema_Method"), new Style.StyleProperty("LayoutSettings", "List")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Event')", "Node", "Event", "Has category", new Style.StyleProperty("Background", "#FFE0E0E0"), new Style.StyleProperty("Stroke", "#FFE0E0E0"), new Style.StyleProperty("Icon", "CodeSchema_Event")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Field')", "Node", "Field", "Has category", new Style.StyleProperty("Background", "#FFE0E0E0"), new Style.StyleProperty("Stroke", "#FFE0E0E0"), new Style.StyleProperty("Icon", "CodeSchema_Field")));
-            AddStyle(new Style(null, "CodeSchemaProperty_IsOut = 'True'", "Node", "Out Parameter", "Has category", new Style.StyleProperty("Icon", "CodeSchema_OutParameter")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Parameter')", "Node", "Parameter", "Has category", new Style.StyleProperty("Icon", "CodeSchema_Parameter")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_LocalExpression')", "Node", "Local Variable", "Has category", new Style.StyleProperty("Icon", "CodeSchema_LocalExpression")));
-            AddStyle(new Style(null, "HasCategory('Externals')", "Node", "Externals", "Has category", new Style.StyleProperty("Background", "#FF424242"), new Style.StyleProperty("Stroke", "#FF424242")));
-            AddStyle(new Style(null, "HasCategory('InheritsFrom')", "Link", "Inherits From", "True", new Style.StyleProperty("Stroke", "#FF00A600"), new Style.StyleProperty("StrokeDashArray", "2 0"), new Style.StyleProperty("DrawArrow", "true")));
-            AddStyle(new Style(null, "HasCategory('Implements')", "Link", "Implements", "True", new Style.StyleProperty("Stroke", "#8000A600"), new Style.StyleProperty("StrokeDashArray", "2 2"), new Style.StyleProperty("DrawArrow", "true")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_Calls')", "Link", "Calls", "True", new Style.StyleProperty("Stroke", "#FFFF00FF"), new Style.StyleProperty("StrokeDashArray", "2 0"), new Style.StyleProperty("DrawArrow", "true")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_FunctionPointer')", "Link", "Function Pointer", "True", new Style.StyleProperty("Stroke", "#FFFF00FF"), new Style.StyleProperty("StrokeDashArray", "2 2"), new Style.StyleProperty("DrawArrow", "true")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_FieldRead')", "Link", "Field Read", "True", new Style.StyleProperty("Stroke", "#FF00AEEF"), new Style.StyleProperty("StrokeDashArray", "2 2"), new Style.StyleProperty("DrawArrow", "true")));
-            AddStyle(new Style(null, "HasCategory('CodeSchema_FieldWrite')", "Link", "Field Write", "True", new Style.StyleProperty("Stroke", "#FF00AEEF"), new Style.StyleProperty("DrawArrow", "true"), new Style.StyleProperty("IsHidden", "false")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_ProjectReference')", "Link", "Project Reference", "Project Reference", new Style.StyleProperty("Stroke", "#9A9A9A"), new Style.StyleProperty("StrokeDashArray", "2 2"), new Style.StyleProperty("DrawArrow", "true")));
-            AddStyle(new Style(null, "HasCategory('CodeMap_ExternalReference')", "Link", "External Reference", "External Reference", new Style.StyleProperty("Stroke", "#9A9A9A"), new Style.StyleProperty("StrokeDashArray", "2 2"), new Style.StyleProperty("DrawArrow", "true")));
-            AddStyle(new Style("Hidden", "HasCategory('InheritsFrom') And Target.HasCategory('CodeSchema_Class')", "Link", "Inherits From", "True", new Style.StyleProperty("TargetDecorator", "OpenArrow")));
-            AddStyle(new Style("Hidden", "HasCategory('Implements') And Target.HasCategory('CodeSchema_Interface')", "Link", "Implements", "True", new Style.StyleProperty("TargetDecorator", "OpenArrow")));
-            AddStyle(new Style("Hidden", "Source.HasCategory('Comment')", "Link", "Comment Link", "True", new Style.StyleProperty("Stroke", "#FFE5C365")));
-            AddStyle(new Style("Hidden", "IsCursorLocation", "Node", "Cursor Location Changed", "True", new Style.StyleProperty("IndicatorWest", "WestIndicator")));
-            AddStyle(new Style("Hidden", "DisabledBreakpointCount", "Node", "Disabled Breakpoint Location Changed", "True", new Style.StyleProperty("IndicatorWest", "WestIndicator")));
-            AddStyle(new Style("Hidden", "EnabledBreakpointCount", "Node", "Enabled Breakpoint Location Changed", "True", new Style.StyleProperty("IndicatorWest", "WestIndicator")));
-            AddStyle(new Style("Hidden", "IsInstructionPointerLocation", "Node", "Instruction Pointer Location Changed", "True", new Style.StyleProperty("IndicatorWest", "WestIndicator")));
-            AddStyle(new Style("Hidden", "IsCurrentCallstackFrame", "Node", "Current Callstack Changed", "True", new Style.StyleProperty("IndicatorWest", "WestIndicator")));
-            AddStyle(new Style("Hidden", "HasCategory('CodeSchema_ReturnTypeLink')", "Link", "Return", "True"));
-            AddStyle(new Style("Hidden", "HasCategory('References')", "Link", "References", "True"));
-            AddStyle(new Style("Hidden", "HasCategory('CodeSchema_AttributeUse')", "Link", "Uses Attribute", "True"));
-            AddStyle(new Style("Hidden", "HasCategory('CodeMap_SolutionFolder')", "Node", "Solution Folder", "True", new Style.StyleProperty("Background", "#FFDEBA83")));
-        }
-        private void AddNode(Node node)
-        {
-            Nodes.Add(node);
-        }
-        /// <summary>
-        /// Adds a link between two nodes on the graph. Usually should not be called directly; use the SetParent or SetLinked methods.
-        /// </summary>
-        /// <param name="link">The link to be added</param>
+        public string Background { get; set; }
+        public string Stroke { get; set; }
 
-        private void AddLink(Link link)
+        public List<Node> Nodes { get; }
+        public List<Link> Links { get; }
+        public List<Style> Styles { get; }
+        public List<Category> Categories { get; }
+        public List<Property> Properties { get; private set; }
+
+        public void AddContainer(string id, string label, string path)
         {
-            Links.Add(link);
+            Nodes.Add(new Node(id, label, "Expanded", filePath: path));
         }
 
-        private void AddStyle(Style style)
+        public void AddContainer(string id, string label, string category, string path)
         {
-            Styles.Add(style);
+            Nodes.Add(new Node(id, label, "Expanded", category:category, filePath: path));
+        }
+        public void AddCollapsedContainer(string id, string label, string category, string path)
+        {
+            Nodes.Add(new Node(id, label, "Collapsed", category:category, filePath: path));
         }
 
-        private void AddCategory(Category category)
+        public bool ExistsContainer(string id)
         {
-            Categories.Add(category);
+            return Nodes.Exists(n => (n.Id == id) && (n.Group == "Expanded"));
         }
 
-        private void AddProperty(Property property)
+        public void AddNodeToContainer(string sourceId, string targetId)
         {
-            Properties.Add(property);
+            Links.Add(new Link { Category = "Contains", Source = sourceId, Target = targetId });
         }
-        
+
+        public void AddNode(string id, string label)
+        {
+            Nodes.Add(new Node(id, label));
+        }
+
+        public void AddNode(string id, string label, string path)
+        {
+            Nodes.Add(new Node(id, label, filePath: path));
+        }
+
+        public void AddNode(string id, string label, string category, string path)
+        {
+            Nodes.Add(new Node(id, label, category:category, filePath: path));
+        }
+
+        public bool ExistsNode(string id)
+        {
+            return Nodes.Exists(n => n.Id == id);
+        }
+
+        public void AddLink(string sourceId, string targetId, string label)
+        {
+            Links.Add(new Link {Source = sourceId, Target = targetId, Label = label});
+        }
+        public void AddLink(string sourceId, string targetId, string label, string category)
+        {
+            Links.Add(new Link { Source = sourceId, Target = targetId, Label = label, Category = category});
+        }
+
         public void Serialize(XmlWriter io)
         {
-            Graph graph = new Graph();
-            graph.Nodes = Nodes.ToArray();
-            graph.Links = Links.ToArray();
-            graph.Categories = Categories.ToArray();
-            graph.Styles = Styles.ToArray();
+            var graph = new Graph
+            {
+                Background = Background,
+                Stroke = Stroke,
+                Nodes = Nodes.ToArray(),
+                Links = Links.ToArray(),
+                Categories = Categories.ToArray(),
+                Styles = Styles.ToArray()
+            };
 
-            XmlRootAttribute root = new XmlRootAttribute("DirectedGraph");
-            root.Namespace = "http://schemas.microsoft.com/vs/2009/dgml";
-            XmlSerializer serializer = new XmlSerializer(typeof(Graph), root);
+            var root = new XmlRootAttribute("DirectedGraph") {Namespace = "http://schemas.microsoft.com/vs/2009/dgml"};
+            
+            var serializer = new XmlSerializer(typeof(Graph), root);
             serializer.Serialize(io, graph);
         }
+
         /// <summary>
-        /// Adds an assembly to the graph. Examples of an assembly would be "my_typescript_file.ts".
+        ///     Adds an assembly to the graph. Examples of an assembly would be "my_typescript_file.ts".
         /// </summary>
         /// <param name="id">The unique id for the assembly</param>
         /// <param name="label">The label which is displayed on the graph</param>
-        public void AddAssembly(string id, string label)
+        public void AddRepository(string id, string label)
         {
-            AddNode(new Node(id, label, @group: "Expanded", category: "CodeSchema_Assembly"));
+            Nodes.Add(new Node(id, label, "Expanded", "Repository"));
         }
+
         /// <summary>
-        /// Adds a namespace to the graph.
-        /// </summary>
-        /// <param name="id">The unique id for the namespace</param>
-        /// <param name="label">The label which is displayed on the graph</param>
-        public void AddNamespace(string id, string label)
-        {
-            AddNode(new Node(id, label, @group: "Expanded", category: "CodeSchema_Namespace"));
-        }
-        /// <summary>
-        /// Adds a class to the graph.
-        /// </summary>
-        /// <param name="id">The unique id for the class</param>
-        /// <param name="label">The label which is displayed on the graph</param>
-        public void AddClass(string id, string label)
-        {
-            AddNode(new Node(id, label, @group: "Expanded", category: "CodeSchema_Class"));
-        }
-        /// <summary>
-        /// Adds an interface to the graph.
-        /// </summary>
-        /// <param name="id">The unique id for the interface</param>
-        /// <param name="label">The label which is displayed on the graph</param>
-        public void AddInterface(string id, string label)
-        {
-            AddNode(new Node(id, label, @group: "Expanded", category: "CodeSchema_Interface"));
-        }
-        /// <summary>
-        /// Adds an enum to the graph.
-        /// </summary>
-        /// <param name="id">The unique id for the enum</param>
-        /// <param name="label">The label which is displayed on the graph</param>
-        public void AddEnum(string id, string label)
-        {
-            AddNode(new Node(id, label, @group: "Expanded", category: "CodeSchema_Enum"));
-        }
-        /// <summary>
-        /// Adds a method to the graph.
-        /// </summary>
-        /// <param name="id">The unique id for the method</param>
-        /// <param name="label">The label which is displayed on the graph</param>
-        public void AddMethod(string id, string label)
-        {
-            AddNode(new Node(id, label, category: "CodeSchema_Method"));
-        }
-        /// <summary>
-        /// Adds a field to the graph.
-        /// </summary>
-        /// <param name="id">The unique id for the field</param>
-        /// <param name="label">The label which is displayed on the graph</param>
-        public void AddField(string id, string label)
-        {
-            AddNode(new Node(id, label, category: "CodeSchema_Field"));
-        }
-        /// <summary>
-        /// Indicates that the node with the given parentId should contain the node with the given childId
+        ///     Indicates that the node with the given parentId should contain the node with the given childId
         /// </summary>
         /// <param name="parentId">The id of the parent node</param>
         /// <param name="childId">The id of the child node</param>
         public void SetParent(string parentId, string childId)
         {
-            AddLink(new Link(parentId, childId, category: "Contains"));
+            Links.Add(new Link(parentId, childId, "Contains"));
         }
+
         /// <summary>
-        /// Indicates that the node with the given fromId should be linked to the node with the given toId
+        ///     Indicates that the node with the given fromId should be linked to the node with the given toId
         /// </summary>
-        /// <param name="firstId">The id of the first node to be linked</param>
-        /// <param name="to">The id of the second node to be linked</param>
-        /// <param name="style">The style to draw the link in; solid by default</param>
+        /// <param name="fromId">The id of the first node to be linked</param>
+        /// <param name="toId">The id of the second node to be linked</param>
         public void SetLinked(string fromId, string toId)
         {
-            AddLink(new Link(fromId, toId));
+            Links.Add(new Link(fromId, toId));
         }
     }
 }
