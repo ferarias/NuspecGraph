@@ -15,6 +15,11 @@ namespace NuspecGraph
             var settings = ParseArguments(args);
             if (settings == null) return;
 
+            Console.WriteLine("NuSpecGraph - A NuSpec file parser and DGML dependency generator");
+            Console.WriteLine($"Input folder: {settings.InputFolder}");
+            Console.WriteLine($"Output file: {settings.OutputFile}");
+            Console.WriteLine($"Groups folder name: {settings.GroupFolder}");
+
             // Obtain nuspec files to process
             var nuspecFiles = GetNuspecFiles(settings.InputFolder);
             if (nuspecFiles == null) return;
@@ -25,7 +30,8 @@ namespace NuspecGraph
             CustomizeGraph(dgmlWriter);
             foreach (var nuspecFile in nuspecFiles)
             {
-                Console.Write($"Processing {nuspecFile}...");
+                if(settings.Verbose)
+                    Console.Write($"Processing {nuspecFile}...");
 
                 // Parse .nuspec file
                 var reader = new NuspecReader.NuspecReader();
@@ -38,7 +44,8 @@ namespace NuspecGraph
                 if (!dgmlWriter.ExistsContainer(container.Value.Id))
                     dgmlWriter.AddContainer(container.Value.Id, container.Value.Label, "Repository", container.Value.FilePath);
                 dgmlWriter.AddNodeToContainer(container.Value.Id, reader.Package.Id.ToLower());
-                Console.WriteLine($"in repo {container.Value.Label}.");
+                if (settings.Verbose)
+                    Console.WriteLine($"in repo {container.Value.Label}.");
             }
 
             dgmlWriter.AddCollapsedContainer("ext", "External", "ExternalRepository", string.Empty);
@@ -63,7 +70,7 @@ namespace NuspecGraph
                 XmlWriter io = new XmlTextWriter(ms, Encoding.Unicode);
                 dgmlWriter.Serialize(io);
             }
-
+            Console.WriteLine($"Finished processing {nuspecFiles.Length} files");
         }
 
         private static Node? GetNodeContainer(string nuspecFile, string groupFolder)
@@ -84,7 +91,11 @@ namespace NuspecGraph
 
         private static string[] GetNuspecFiles(string inputFolder)
         {
-            Console.WriteLine($"Reading .nuspec files from {inputFolder}");
+            if (string.IsNullOrEmpty(inputFolder))
+            {
+                Console.WriteLine("inputFolder is empty");
+                return null;
+            }
             var nuspecFiles = Directory.GetFiles(inputFolder, "*.nuspec", SearchOption.AllDirectories);
             if (nuspecFiles.Length != 0) return nuspecFiles;
             Console.WriteLine("No .nuspec files found");
@@ -110,6 +121,12 @@ namespace NuspecGraph
                 .As('g', "groupfolder")
                 .SetDefault("NuGetPackages");
 
+            p.Setup(arg => arg.Verbose)
+                .As('v', "verbose")
+                .SetDefault(false);
+
+            p.SetupHelp("?", "help")
+                .Callback(text => Console.WriteLine(text));
 
             var result = p.Parse(args);
             if (!result.HasErrors) return p.Object;
