@@ -1,9 +1,12 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 
 namespace DgmlWriter
 {
     public struct Node
     {
+        public static Node EmptyNode = new Node(string.Empty, string.Empty, string.Empty, string.Empty, string.Empty);
+
         [XmlAttribute]
         public string Id;
         [XmlAttribute]
@@ -22,6 +25,8 @@ namespace DgmlWriter
             FilePath = filePath;
             Group = group;
         }
+
+        public bool IsEmpty => string.IsNullOrEmpty(Id) && string.IsNullOrEmpty(Label) && string.IsNullOrEmpty(Category);
 
         public override string ToString()
         {

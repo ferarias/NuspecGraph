@@ -42,9 +42,11 @@ namespace DgmlWriter
             return Nodes.Exists(n => (n.Id == id) && (n.Group == "Expanded"));
         }
 
-        public void AddNodeToContainer(string sourceId, string targetId)
+        public void AddNodeToContainer(Node containerNode, string targetId)
         {
-            Links.Add(new Link { Category = "Contains", Source = sourceId, Target = targetId });
+            if (!ExistsContainer(containerNode.Id))
+                AddContainer(containerNode.Id, containerNode.Label, containerNode.Category, containerNode.FilePath);
+            Links.Add(new Link { Category = "Contains", Source = containerNode.Id, Target = targetId });
         }
 
         public void AddNode(string id, string label)
@@ -60,6 +62,15 @@ namespace DgmlWriter
         public void AddNode(string id, string label, string category, string path)
         {
             Nodes.Add(new Node(id, label, category:category, filePath: path));
+        }
+
+        public void AddNode(string id, string label, string category, string path, Node container)
+        {
+            Nodes.Add(new Node(id, label, category: category, filePath: path));
+            if (!container.IsEmpty)
+            {
+                AddNodeToContainer(container, id);
+            }
         }
 
         public bool ExistsNode(string id)

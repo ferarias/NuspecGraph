@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Xml;
 using DgmlWriter;
 using Fclp;
+using NuspecReader;
 
 namespace NuspecGraph
 {
@@ -20,60 +22,82 @@ namespace NuspecGraph
             Console.WriteLine($"Output file: {settings.OutputFile}");
             Console.WriteLine($"Groups folder name: {settings.GroupFolder}");
 
-            // Obtain nuspec files to process
-            var nuspecFiles = GetNuspecFiles(settings.InputFolder);
-            if (nuspecFiles == null) return;
-
-            // Process files
+            // Initialize a new graph
             var dgmlWriter = new DgmlWriter.DgmlWriter();
-            
             CustomizeGraph(dgmlWriter);
-            foreach (var nuspecFile in nuspecFiles)
+
+            // Look for nuspec files to process and read their contents
+            var nuspecDataList = ReadNuGetFiles(settings.InputFolder, settings.GroupFolder, settings.Verbose);
+            if (nuspecDataList == null) return;
+
+            // Add nodes to graph
+            foreach (var nuspecData in nuspecDataList)
             {
-                if(settings.Verbose)
-                    Console.Write($"Processing {nuspecFile}...");
-
-                // Parse .nuspec file
-                var reader = new NuspecReader.NuspecReader();
-                reader.Read(nuspecFile);
-                dgmlWriter.AddNode(reader.Package.Id.ToLower(), reader.Package.GetLabel(), "NuGetPackage", nuspecFile);
-
-                // Obtain and set container (repository)
-                var container = GetNodeContainer(nuspecFile, settings.GroupFolder);
-                if (!container.HasValue) continue;
-                if (!dgmlWriter.ExistsContainer(container.Value.Id))
-                    dgmlWriter.AddContainer(container.Value.Id, container.Value.Label, "Repository", container.Value.FilePath);
-                dgmlWriter.AddNodeToContainer(container.Value.Id, reader.Package.Id.ToLower());
-                if (settings.Verbose)
-                    Console.WriteLine($"in repo {container.Value.Label}.");
+                dgmlWriter.AddNode(nuspecData.PackageId, nuspecData.Label, "NuGetPackage", nuspecData.FilePath, nuspecData.Container);
             }
-
-            dgmlWriter.AddCollapsedContainer("ext", "External", "ExternalRepository", string.Empty);
-            foreach (var nuspecFile in nuspecFiles)
+            
+            // Add dependencies to graph
+            foreach (var nuspecData in nuspecDataList)
             {
-                var reader = new NuspecReader.NuspecReader();
-                reader.Read(nuspecFile);
-                foreach (var dependency in reader.Dependencies)
+                foreach (var dependency in nuspecData.Dependencies)
                 {
-                    var dependencyId = dependency.Id.ToLower();
-                    if (!dgmlWriter.ExistsNode(dependencyId))
+                    if (!dgmlWriter.ExistsNode(dependency.Id))
                     {
-                        dgmlWriter.AddNode(dependencyId, dependency.GetLabel(), "ExternalNuGetPackage");
-                        dgmlWriter.SetParent("ext", dependencyId);
+                        dgmlWriter.AddNode(dependency.Id, dependency.GetLabel(), "ExternalNuGetPackage", "");
+                        dgmlWriter.SetParent("ext", dependency.Id);
                     }
-                    dgmlWriter.AddLink(dependencyId, reader.Package.Id.ToLower(), dependency.Version, "DependsOn");
+                    dgmlWriter.AddLink(dependency.Id, nuspecData.PackageId, dependency.Version, "DependsOn");
                 }
             }
 
+            // Write graph to file
             using (var ms = new FileStream(settings.OutputFile, FileMode.Create))
             {
                 XmlWriter io = new XmlTextWriter(ms, Encoding.Unicode);
                 dgmlWriter.Serialize(io);
             }
-            Console.WriteLine($"Finished processing {nuspecFiles.Length} files");
+            Console.WriteLine($"Finished processing {nuspecDataList.Count} files");
         }
 
-        private static Node? GetNodeContainer(string nuspecFile, string groupFolder)
+        private static List<NuspecData> ReadNuGetFiles(string inputFolder, string groupsFolder, bool verbose = false)
+        {
+            var nuspecFiles = FindAllNuspecFilesInFolder(inputFolder);
+            if (nuspecFiles == null) return null;
+
+            var nuspecData = new List<NuspecData>();
+            foreach (var nuspecFile in nuspecFiles)
+            {
+                if (verbose) Console.WriteLine($"Reading {nuspecFile}...");
+
+                // Parse .nuspec file
+                var reader = new NuspecReader.NuspecReader();
+                reader.Read(nuspecFile);
+
+                var item = new NuspecData
+                {
+                    FilePath = nuspecFile,
+                    PackageId = reader.Package.Id.ToLower(),
+                    Label = reader.Package.GetLabel(),
+                    Container = GetNodeContainer(nuspecFile, groupsFolder),
+                    Dependencies = reader.Dependencies
+                };
+                
+                nuspecData.Add(item);
+            }
+            return nuspecData;
+        }
+
+        public class NuspecData
+        {
+            public string FilePath { get; set; }
+            public string PackageId { get; set; }
+            public string Label { get; set; }
+            public Node Container { get; set; }
+
+            public IEnumerable<VersionedPackage> Dependencies { get; set; }
+        }
+
+        private static Node GetNodeContainer(string nuspecFile, string groupFolder)
         {
             var fi = new FileInfo(nuspecFile);
             var di = fi.Directory;
@@ -83,13 +107,14 @@ namespace NuspecGraph
                 {
                     Id = di?.Parent?.Name.ToLower(),
                     Label = di?.Parent?.Name,
+                    Category = "Repository",
                     FilePath = di?.Parent?.FullName
                 };
             }
-            return null;
+            return Node.EmptyNode;
         }
 
-        private static string[] GetNuspecFiles(string inputFolder)
+        private static string[] FindAllNuspecFilesInFolder(string inputFolder)
         {
             if (string.IsNullOrEmpty(inputFolder))
             {
@@ -144,6 +169,7 @@ namespace NuspecGraph
             writer.Styles.Add(new Style("Hidden", "HasCategory('Contains')", "Link", "Contains", "Contains", new Style.StyleProperty("Background", "#9A9A9A")));
             writer.Styles.Add(new Style("Hidden", "HasCategory('DependsOn') And Target.HasCategory('NuGetPackage')", "Link", "Depends On", "Dependency", new Style.StyleProperty("Stroke", "#9A9A9A"), new Style.StyleProperty("StrokeDashArray", "2 2"), new Style.StyleProperty("DrawArrow", "true")));
             writer.Styles.Add(new Style("Hidden", "HasCategory('DependsOn') And Target.HasCategory('ExternalNuGetPackage')", "Link", "Depends On", "True", new Style.StyleProperty("TargetDecorator", "OpenArrow")));
+            writer.AddCollapsedContainer("ext", "External", "ExternalRepository", string.Empty);
         }
     }
 }
