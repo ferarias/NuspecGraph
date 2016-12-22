@@ -1,6 +1,6 @@
 ﻿namespace NuspecGraph
 {
-    internal class AppSettings
+    public class AppSettings
     {
         public string InputFolder { get; set; }
 

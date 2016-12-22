@@ -1,7 +1,6 @@
-﻿using System;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
-namespace DgmlWriter
+namespace Toolfactory.Dgml
 {
     public struct Node
     {

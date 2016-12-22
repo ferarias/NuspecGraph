@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace DgmlWriter
+namespace Toolfactory.Dgml
 {
     public struct Category
     {

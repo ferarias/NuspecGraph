@@ -48,6 +48,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppSettings.cs" />
+    <Compile Include="Grapher.cs" />
+    <Compile Include="NuspecData.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -59,9 +61,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DgmlWriter\DgmlWriter.csproj">
+    <ProjectReference Include="..\DgmlWriter\Toolfactory.Dgml.csproj">
       <Project>{3d2df8c2-71e6-403b-96d1-e3000fe973aa}</Project>
-      <Name>DgmlWriter</Name>
+      <Name>Toolfactory.Dgml</Name>
     </ProjectReference>
     <ProjectReference Include="..\NuspecReader\NuspecReader.csproj">
       <Project>{7896ea85-d8e6-4b4b-bcfd-31485ae7baa2}</Project>

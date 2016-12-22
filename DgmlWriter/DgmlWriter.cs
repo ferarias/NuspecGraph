@@ -2,17 +2,22 @@
 using System.Xml;
 using System.Xml.Serialization;
 
-namespace DgmlWriter
+namespace Toolfactory.Dgml
 {
     public class DgmlWriter
     {
-        public DgmlWriter()
-        {
-            Nodes = new List<Node>();
-            Links = new List<Link>();
-            Styles = new List<Style>();
-            Categories = new List<Category>();
-        }
+        #region Constants
+
+        public const string NodeTargetType = "Node";
+        public const string LinkTargetType = "Link";
+        public const string ExpandedNodeGroup = "Expanded";
+        public const string CollapsedNodeGroup = "Collapsed";
+        public const string ContainsLinkCategory = "Contains";
+        public const string DependsOnLinkCategory = "DependsOn";
+
+        #endregion
+
+        #region Properties
 
         public string Background { get; set; }
         public string Stroke { get; set; }
@@ -23,30 +28,44 @@ namespace DgmlWriter
         public List<Category> Categories { get; }
         public List<Property> Properties { get; private set; }
 
+        #endregion
+
+        #region Ctors
+
+        public DgmlWriter()
+        {
+            Nodes = new List<Node>();
+            Links = new List<Link>();
+            Styles = new List<Style>();
+            Categories = new List<Category>();
+        }
+
+        #endregion
+
         public void AddContainer(string id, string label, string path)
         {
-            Nodes.Add(new Node(id, label, "Expanded", filePath: path));
+            Nodes.Add(new Node(id, label, ExpandedNodeGroup, filePath: path));
         }
 
         public void AddContainer(string id, string label, string category, string path)
         {
-            Nodes.Add(new Node(id, label, "Expanded", category:category, filePath: path));
+            Nodes.Add(new Node(id, label, ExpandedNodeGroup, category:category, filePath: path));
         }
         public void AddCollapsedContainer(string id, string label, string category, string path)
         {
-            Nodes.Add(new Node(id, label, "Collapsed", category:category, filePath: path));
+            Nodes.Add(new Node(id, label, CollapsedNodeGroup, category:category, filePath: path));
         }
 
         public bool ExistsContainer(string id)
         {
-            return Nodes.Exists(n => (n.Id == id) && (n.Group == "Expanded"));
+            return Nodes.Exists(n => n.Id.Equals(id) && n.Group.Equals(ExpandedNodeGroup));
         }
 
         public void AddNodeToContainer(Node containerNode, string targetId)
         {
             if (!ExistsContainer(containerNode.Id))
                 AddContainer(containerNode.Id, containerNode.Label, containerNode.Category, containerNode.FilePath);
-            Links.Add(new Link { Category = "Contains", Source = containerNode.Id, Target = targetId });
+            Links.Add(new Link { Category = ContainsLinkCategory, Source = containerNode.Id, Target = targetId });
         }
 
         public void AddNode(string id, string label)
@@ -105,16 +124,7 @@ namespace DgmlWriter
             serializer.Serialize(io, graph);
         }
 
-        /// <summary>
-        ///     Adds an assembly to the graph. Examples of an assembly would be "my_typescript_file.ts".
-        /// </summary>
-        /// <param name="id">The unique id for the assembly</param>
-        /// <param name="label">The label which is displayed on the graph</param>
-        public void AddRepository(string id, string label)
-        {
-            Nodes.Add(new Node(id, label, "Expanded", "Repository"));
-        }
-
+        
         /// <summary>
         ///     Indicates that the node with the given parentId should contain the node with the given childId
         /// </summary>
@@ -122,8 +132,10 @@ namespace DgmlWriter
         /// <param name="childId">The id of the child node</param>
         public void SetParent(string parentId, string childId)
         {
-            Links.Add(new Link(parentId, childId, "Contains"));
+            Links.Add(new Link(parentId, childId, ContainsLinkCategory));
         }
+
+        
 
         /// <summary>
         ///     Indicates that the node with the given fromId should be linked to the node with the given toId
