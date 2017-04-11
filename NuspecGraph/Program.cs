@@ -40,8 +40,10 @@ namespace NuspecGraph
                 .SetDefault(Path.Combine(folder, "out.dgml"));
 
             p.Setup(arg => arg.GroupFolder)
-                .As('g', "groupfolder")
-                .SetDefault("NuGetPackages");
+                .As('g', "groupfolder");
+
+            p.Setup(arg => arg.UsePrefixes)
+                .As('p', "prefixes");
 
             p.Setup(arg => arg.Verbose)
                 .As('v', "verbose")
@@ -57,7 +59,10 @@ namespace NuspecGraph
                 Console.WriteLine("NuSpecGraph - A NuSpec file parser and DGML dependency generator");
                 Console.WriteLine($"Input folder: {appSettings.InputFolder}");
                 Console.WriteLine($"Output file: {appSettings.OutputFile}");
-                Console.WriteLine($"Groups folder name: {appSettings.GroupFolder}");
+                if(!string.IsNullOrEmpty(appSettings.GroupFolder))
+                    Console.WriteLine($"Groups folder name: {appSettings.GroupFolder}");
+                if (appSettings.UsePrefixes)
+                    Console.WriteLine("Using prefixes to group packages");
                 return appSettings;
             }
 

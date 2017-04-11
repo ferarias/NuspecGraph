@@ -53,6 +53,7 @@ namespace NuspecGraph
 
         public string InputFolder { get; set; }
         public string GroupFolder { get; set; }
+        public bool UsePrefixes { get; set; }
         public bool Verbose { get; set; }
 
         private readonly DgmlWriter _dgmlWriter;
@@ -60,6 +61,7 @@ namespace NuspecGraph
         {
             InputFolder = settings.InputFolder;
             GroupFolder = settings.GroupFolder;
+            UsePrefixes = settings.UsePrefixes;
             Verbose = settings.Verbose;
             
             _dgmlWriter = new DgmlWriter();
@@ -82,7 +84,7 @@ namespace NuspecGraph
         public int Do()
         {
             // Look for nuspec files to process and read their contents
-            var nuspecDataList = ReadNuGetFiles(InputFolder, GroupFolder, Verbose);
+            var nuspecDataList = ReadNuGetFiles(InputFolder, GroupFolder, UsePrefixes, Verbose);
             if (nuspecDataList == null) return 0;
 
 
@@ -109,7 +111,7 @@ namespace NuspecGraph
         }
 
 
-        private static List<NuspecData> ReadNuGetFiles(string inputFolder, string groupsFolder, bool verbose = false)
+        private static List<NuspecData> ReadNuGetFiles(string inputFolder, string groupsFolder, bool usePrefixes, bool verbose = false)
         {
             var nuspecFiles = FindAllNuspecFilesInFolder(inputFolder);
             if (nuspecFiles == null) return null;
@@ -123,12 +125,13 @@ namespace NuspecGraph
                 var reader = new NuspecReader.NuspecReader();
                 reader.Read(nuspecFile);
 
+                var packageId = reader.Package.Id.ToLower();
                 var item = new NuspecData
                 {
                     FilePath = nuspecFile,
-                    PackageId = reader.Package.Id.ToLower(),
+                    PackageId = packageId,
                     Label = reader.Package.GetLabel(),
-                    Container = GetNodeContainer(nuspecFile, groupsFolder),
+                    Container = GetNodeContainer(nuspecFile, packageId, groupsFolder, usePrefixes),
                     Dependencies = reader.Dependencies
                 };
 
@@ -152,20 +155,44 @@ namespace NuspecGraph
         }
 
 
-        private static Node GetNodeContainer(string nuspecFile, string groupFolder)
+        private static Node GetNodeContainer(string nuspecFile, string packageId, string groupFolder, bool usePrefixes)
         {
-            var fi = new FileInfo(nuspecFile);
-            var di = fi.Directory;
-            if (di?.Name == groupFolder)
+            if (!string.IsNullOrEmpty(groupFolder))
             {
-                return new Node
+                var fi = new FileInfo(nuspecFile);
+                var di = fi.Directory;
+                if (di != null)
                 {
-                    Id = di?.Parent?.Name.ToLower(),
-                    Label = di?.Parent?.Name,
-                    Category = ContainerCategory,
-                    FilePath = di?.Parent?.FullName
-                };
+                    if (di.Name == groupFolder)
+                    {
+                        return new Node
+                        {
+                            Id = di.Parent?.Name.ToLower(),
+                            Label = di.Parent?.Name,
+                            Category = ContainerCategory,
+                            FilePath = di.Parent?.FullName
+                        };
+                    }
+                    if (usePrefixes)
+                    {
+                        var idx = di.Name.IndexOf('-');
+                        if (idx < 1) return Node.EmptyNode;
+
+                        var name = di.Name.Substring(0, idx);
+
+                        return new Node
+                        {
+                            Id = name.ToLower(),
+                            Label = name,
+                            Category = ContainerCategory
+                        };
+                    }
+                }
             }
+
+            
+
+            
             return Node.EmptyNode;
         }
 
